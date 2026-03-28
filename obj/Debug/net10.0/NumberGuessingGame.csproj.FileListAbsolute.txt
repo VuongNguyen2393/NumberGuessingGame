@@ -1,0 +1,15 @@
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/bin/Debug/net10.0/NumberGuessingGame
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/bin/Debug/net10.0/NumberGuessingGame.deps.json
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/bin/Debug/net10.0/NumberGuessingGame.runtimeconfig.json
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/bin/Debug/net10.0/NumberGuessingGame.dll
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/bin/Debug/net10.0/NumberGuessingGame.pdb
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/NumberGuessingGame.GeneratedMSBuildEditorConfig.editorconfig
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/NumberGuessingGame.AssemblyInfoInputs.cache
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/NumberGuessingGame.AssemblyInfo.cs
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/NumberGuessingGame.csproj.CoreCompileInputs.cache
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/NumberGuessingGame.sourcelink.json
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/NumberGuessingGame.dll
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/refint/NumberGuessingGame.dll
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/NumberGuessingGame.pdb
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/NumberGuessingGame.genruntimeconfig.cache
+/Users/vuongnguyen/Desktop/Personal Project/DotNet Projects/NumberGuessingGame/obj/Debug/net10.0/ref/NumberGuessingGame.dll
