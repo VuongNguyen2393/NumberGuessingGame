@@ -5,18 +5,14 @@ namespace NumberGuessingGame;
 
 class Program
 {
-    private const int _minValue = 1;
-    private const int _maxValue = 100;
+    private const int MIN_VALUE = 1;
+    private const int MAX_VALUE = 100;
 
     static void Main(string[] args)
     {
-        ConsoleHelper.PrintWelcome();
+        ConsoleHelper.PrintWelcome(MIN_VALUE, MAX_VALUE);
         ConsoleHelper.PrintDifficultLevel();
-        var levelStr = Console.ReadLine();
-        if (!Enum.TryParse<Level>(levelStr, out var level))
-        {
-            ConsoleHelper.PrintWarning("The level should only be 1, 2 or 3");
-        }
+        var level = GetLevel();
         ConsoleHelper.PrintStartGame(level);
 
         bool isQuit = false;
@@ -31,7 +27,7 @@ class Program
             {
                 Console.Write("> Enter your guess: ");
                 var guessNumberStr = Console.ReadLine();
-                ValidateIntegerInput(guessNumberStr, _minValue, _maxValue, out bool isValidated, out int guessNumber);
+                ValidateIntegerInput(guessNumberStr, MIN_VALUE, MAX_VALUE, out bool isValidated, out int guessNumber);
                 if (!isValidated)
                 {
                     continue;
@@ -77,6 +73,23 @@ class Program
                 isContinueConfirm = false;
             }
         }
+    }
+
+    private static Level GetLevel()
+    {
+        Level returnLevel = Level.Easy;
+        bool isValidLevel = false;
+        while (!isValidLevel)
+        {
+            var levelStr = Console.ReadLine();
+            if (!Enum.TryParse<Level>(levelStr, out var level))
+            {
+                ConsoleHelper.PrintWarning("The level should only be 1, 2 or 3");
+                continue;
+            }
+            returnLevel = level;
+        }
+        return returnLevel;
     }
 
     private static int GetAttempt(Level level)

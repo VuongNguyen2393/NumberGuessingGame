@@ -2,9 +2,9 @@ namespace NumberGuessingGame.Utils
 {
   public static class ConsoleHelper
   {
-    public static void PrintWelcome()
+    public static void PrintWelcome(int minValue, int maxValue)
     {
-      var welcome = "Welcome to the Number Guessing Game!\nI'm thinking of a number between 1 and 100.\nYou have some chances to guess the correct number.\n";
+      var welcome = $"Welcome to the Number Guessing Game!\nI'm thinking of a number between {minValue} and ${maxValue}.\nYou have some chances to guess the correct number.\n";
       PrintColor(welcome, ConsoleColor.DarkMagenta);
     }
 
