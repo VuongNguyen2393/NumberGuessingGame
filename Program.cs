@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
 using NumberGuessingGame.Utils;
 
 namespace NumberGuessingGame;
@@ -27,6 +26,7 @@ class Program
             var attempt = 0;
             var targetNumber = Random.Shared.Next(1, 101);
             bool isEndGame = false;
+            var stopWatch = Stopwatch.StartNew();
             while (attempt < maxAttempt && !isEndGame)
             {
                 Console.Write("> Enter your guess: ");
@@ -48,14 +48,16 @@ class Program
                 }
                 else
                 {
-                    ConsoleHelper.PrintInfo($"Congratulations! You guessed the correct number in {attempt} attempts\n");
+                    stopWatch.Stop();
+                    ConsoleHelper.PrintInfo($"Congratulations! You guessed the correct number in {attempt} attempts\nYou finished your turn in {stopWatch.ElapsedMilliseconds / 1000} seconds\n");
                     isEndGame = true;
                     continue;
                 }
 
                 if (attempt == maxAttempt)
                 {
-                    ConsoleHelper.PrintError("You're FAIL\n");
+                    stopWatch.Stop();
+                    ConsoleHelper.PrintError($"You're FAIL\nYou finished your turn in {stopWatch.ElapsedMilliseconds / 1000} seconds\n");
                     continue;
                 }
             }
