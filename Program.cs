@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Formats.Tar;
 using NumberGuessingGame.Utils;
 
 namespace NumberGuessingGame;
@@ -7,11 +8,14 @@ class Program
 {
     private const int MIN_VALUE = 1;
     private const int MAX_VALUE = 100;
+    private const int EASY_CHANCE_COUNT = 10;
+    private const int MEDIUM_CHANCE_COUNT = 7;
+    private const int HARD_CHANCE_COUNT = 5;
 
     static void Main(string[] args)
     {
         ConsoleHelper.PrintWelcome(MIN_VALUE, MAX_VALUE);
-        ConsoleHelper.PrintDifficultLevel();
+        ConsoleHelper.PrintDifficultLevel(EASY_CHANCE_COUNT, MEDIUM_CHANCE_COUNT, HARD_CHANCE_COUNT);
         var level = GetLevel();
         ConsoleHelper.PrintStartGame(level);
 
@@ -19,60 +23,70 @@ class Program
         while (!isQuit)
         {
             var maxAttempt = GetAttempt(level);
-            var attempt = 0;
             var targetNumber = Random.Shared.Next(1, 101);
-            bool isEndGame = false;
-            var stopWatch = Stopwatch.StartNew();
-            while (attempt < maxAttempt && !isEndGame)
+            RoundPlay(maxAttempt, targetNumber);
+            GetRetryConfirmation(ref isQuit, ref level);
+        }
+    }
+
+    private static void RoundPlay(int maxAttempt, int targetNumber)
+    {
+        var attempt = 0;
+        bool isEndGame = false;
+        var stopWatch = Stopwatch.StartNew();
+        while (attempt < maxAttempt && !isEndGame)
+        {
+            HintLogic(attempt, maxAttempt, MIN_VALUE, MAX_VALUE, targetNumber);
+            Console.Write("> Enter your guess: ");
+            var guessNumberStr = Console.ReadLine();
+            ValidateIntegerInput(guessNumberStr, MIN_VALUE, MAX_VALUE, out bool isValidated, out int guessNumber);
+            if (!isValidated)
             {
-                Console.Write("> Enter your guess: ");
-                var guessNumberStr = Console.ReadLine();
-                ValidateIntegerInput(guessNumberStr, MIN_VALUE, MAX_VALUE, out bool isValidated, out int guessNumber);
-                if (!isValidated)
-                {
-                    continue;
-                }
-                attempt++;
+                continue;
+            }
+            attempt++;
 
-                if (guessNumber > targetNumber)
-                {
-                    ConsoleHelper.PrintWarning($"Incorrect! The number is less than {guessNumber}.\n");
-                }
-                else if (guessNumber < targetNumber)
-                {
-                    ConsoleHelper.PrintWarning($"Incorrect! The number is greater than {guessNumber}.\n");
-                }
-                else
-                {
-                    stopWatch.Stop();
-                    ConsoleHelper.PrintInfo($"Congratulations! You guessed the correct number in {attempt} attempts\nYou finished your turn in {stopWatch.ElapsedMilliseconds / 1000} seconds\n");
-                    isEndGame = true;
-                    continue;
-                }
-
-                if (attempt == maxAttempt)
-                {
-                    stopWatch.Stop();
-                    ConsoleHelper.PrintError($"You're FAIL\nYou finished your turn in {stopWatch.ElapsedMilliseconds / 1000} seconds\n");
-                    continue;
-                }
+            if (guessNumber > targetNumber)
+            {
+                ConsoleHelper.PrintWarning($"Incorrect! The number is less than {guessNumber}.\n");
+            }
+            else if (guessNumber < targetNumber)
+            {
+                ConsoleHelper.PrintWarning($"Incorrect! The number is greater than {guessNumber}.\n");
+            }
+            else
+            {
+                stopWatch.Stop();
+                ConsoleHelper.PrintInfo($"Congratulations! You guessed the correct number in {attempt} attempts\nYou finished your turn in {stopWatch.ElapsedMilliseconds / 1000} seconds\n");
+                isEndGame = true;
+                continue;
             }
 
-            bool isContinueConfirm = true;
-            while (isContinueConfirm)
+            if (attempt == maxAttempt)
             {
-                System.Console.WriteLine("Do you wanny retry?\n1. Yes\n2. No\n");
-                var decisionStr = Console.ReadLine();
-                ValidateIntegerInput(decisionStr, 1, 2, out bool isValidated, out int decision);
-
-                if (!isValidated) continue;
-                if (decision == 2)
-                {
-                    isQuit = true;
-                }
-                isContinueConfirm = false;
+                stopWatch.Stop();
+                ConsoleHelper.PrintError($"You're FAIL\nYou finished your turn in {stopWatch.ElapsedMilliseconds / 1000} seconds\n");
+                continue;
             }
         }
+    }
+
+    private static void HintLogic(int attempt, int maxAttemp, int minValue, int maxValue, int targetValue)
+    {
+        if (attempt == maxAttemp / 2)
+        {
+            var hintLowNumb = Random.Shared.Next(1, 20);
+            var hintUpNumb = Random.Shared.Next(1, 20);
+            ConsoleHelper.PrintHint($"The target number in the range from {targetValue - hintLowNumb} to {targetValue + hintUpNumb}");
+        }
+
+        if (attempt == maxAttemp * 7 / 10)
+        {
+            var typeOfTargetValue = targetValue % 2 == 0 ? "even" : "odd";
+            ConsoleHelper.PrintHint($"The target number is {typeOfTargetValue} number");
+        }
+
+
     }
 
     private static Level GetLevel()
@@ -87,9 +101,36 @@ class Program
                 ConsoleHelper.PrintWarning("The level should only be 1, 2 or 3");
                 continue;
             }
+            isValidLevel = true;
             returnLevel = level;
         }
         return returnLevel;
+    }
+
+    private static void GetRetryConfirmation(ref bool isQuit, ref Level currentLevel)
+    {
+        bool isContinueConfirm = true;
+        while (isContinueConfirm)
+        {
+            ConsoleHelper.PrintInfo("Do you wanny retry?\n1. Yes\n2. No\n3. Change difficulty level\n");
+            var decisionStr = Console.ReadLine();
+            ValidateIntegerInput(decisionStr, 1, 3, out bool isValidated, out int decision);
+
+            if (!isValidated) continue;
+            if (decision == 2)
+            {
+                isQuit = true;
+            }
+            if (decision == 3)
+            {
+                Console.WriteLine();
+                ConsoleHelper.PrintDifficultLevel(EASY_CHANCE_COUNT, MEDIUM_CHANCE_COUNT, HARD_CHANCE_COUNT);
+                var level = GetLevel();
+                ConsoleHelper.PrintStartGame(level);
+                currentLevel = level;
+            }
+            isContinueConfirm = false;
+        }
     }
 
     private static int GetAttempt(Level level)
@@ -98,13 +139,13 @@ class Program
         switch (level)
         {
             case Level.Easy:
-                attempt = 10;
+                attempt = EASY_CHANCE_COUNT;
                 break;
             case Level.Medium:
-                attempt = 5;
+                attempt = MEDIUM_CHANCE_COUNT;
                 break;
             default:
-                attempt = 3;
+                attempt = HARD_CHANCE_COUNT;
                 break;
         }
         return attempt;

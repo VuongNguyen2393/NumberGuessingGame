@@ -8,9 +8,9 @@ namespace NumberGuessingGame.Utils
       PrintColor(welcome, ConsoleColor.DarkMagenta);
     }
 
-    public static void PrintDifficultLevel()
+    public static void PrintDifficultLevel(int easyChanceCount, int mediumChanceCount, int hardChanceCount)
     {
-      var levels = "1. Easy (10 chances)\n2. Medium (5 chances)\n3. Hard (3 chances)\n";
+      var levels = $"1. Easy ({easyChanceCount} chances)\n2. Medium ({mediumChanceCount} chances)\n3. Hard ({hardChanceCount} chances)\n";
       var yourChoice = "Enter your choice: ";
       PrintColor(levels, ConsoleColor.Blue);
       PrintLineColor(yourChoice, ConsoleColor.DarkRed);
@@ -36,6 +36,11 @@ namespace NumberGuessingGame.Utils
     public static void PrintError(string text)
     {
       PrintColor(text, ConsoleColor.DarkRed);
+    }
+
+    public static void PrintHint(string text)
+    {
+      PrintColor(text, ConsoleColor.Blue);
     }
 
 
