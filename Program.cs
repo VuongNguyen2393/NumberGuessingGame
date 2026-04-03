@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Formats.Tar;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.VisualBasic;
 using NumberGuessingGame.Utils;
 
 namespace NumberGuessingGame;
@@ -11,6 +14,7 @@ class Program
     private const int EASY_CHANCE_COUNT = 10;
     private const int MEDIUM_CHANCE_COUNT = 7;
     private const int HARD_CHANCE_COUNT = 5;
+    private const string HIGH_SCORE_RECORD = "Data/highscore.json";
 
     static void Main(string[] args)
     {
@@ -18,18 +22,20 @@ class Program
         ConsoleHelper.PrintDifficultLevel(EASY_CHANCE_COUNT, MEDIUM_CHANCE_COUNT, HARD_CHANCE_COUNT);
         var level = GetLevel();
         ConsoleHelper.PrintStartGame(level);
+        var highScore = GetHighScore();
+
 
         bool isQuit = false;
         while (!isQuit)
         {
             var maxAttempt = GetAttempt(level);
             var targetNumber = Random.Shared.Next(1, 101);
-            RoundPlay(maxAttempt, targetNumber);
+            RoundPlay(level, maxAttempt, targetNumber, highScore);
             GetRetryConfirmation(ref isQuit, ref level);
         }
     }
 
-    private static void RoundPlay(int maxAttempt, int targetNumber)
+    private static void RoundPlay(Level level, int maxAttempt, int targetNumber, Dictionary<Level, int> highScore)
     {
         var attempt = 0;
         bool isEndGame = false;
@@ -57,8 +63,11 @@ class Program
             else
             {
                 stopWatch.Stop();
-                ConsoleHelper.PrintInfo($"Congratulations! You guessed the correct number in {attempt} attempts\nYou finished your turn in {stopWatch.ElapsedMilliseconds / 1000} seconds\n");
+                var secondPlayTime = stopWatch.ElapsedMilliseconds / 1000;
+                ConsoleHelper.PrintInfo($"Congratulations! You guessed the correct number in {attempt} attempts\nYou finished your turn in {secondPlayTime} seconds\n");
                 isEndGame = true;
+                var point = CountPoint(level, attempt, (int)secondPlayTime);
+                CheckHighScore(level, point, highScore);
                 continue;
             }
 
@@ -69,6 +78,57 @@ class Program
                 continue;
             }
         }
+    }
+
+    private static void CheckHighScore(Level level, int point, Dictionary<Level, int> highScore)
+    {
+        if (point > highScore[level])
+        {
+            ConsoleHelper.PrintError($"Excellent!!! You got the new record with {point} point for level {level}\n");
+            highScore[level] = point;
+            UpdateHighScore(highScore);
+        }
+    }
+
+    private static void UpdateHighScore(Dictionary<Level, int> highScore)
+    {
+        var highScoreStr = JsonSerializer.Serialize(highScore, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
+        File.WriteAllText(HIGH_SCORE_RECORD, highScoreStr);
+    }
+
+    private static Dictionary<Level, int> GetHighScore()
+    {
+        var initHighScore = new Dictionary<Level, int>()
+            {
+                {Level.Easy, 0},
+                {Level.Medium, 0},
+                {Level.Hard, 0}
+            };
+
+        if (!File.Exists(HIGH_SCORE_RECORD))
+        {
+
+
+            var highScoreStr = JsonSerializer.Serialize(initHighScore, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            File.WriteAllText(HIGH_SCORE_RECORD, highScoreStr);
+            return initHighScore;
+        }
+
+        var highScoreJson = File.ReadAllText(HIGH_SCORE_RECORD);
+        var highScore = JsonSerializer.Deserialize<Dictionary<Level, int>>(highScoreJson);
+        return highScore ?? initHighScore;
+    }
+
+    private static int CountPoint(Level level, int attempt, int second)
+    {
+        return (3 - (int)level) * 10 + (10 - attempt) * 5 + (45 - second);
     }
 
     private static void HintLogic(int attempt, int maxAttemp, int minValue, int maxValue, int targetValue)
